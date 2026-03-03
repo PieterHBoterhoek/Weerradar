@@ -1,6 +1,6 @@
 from urllib.request import urlopen
 import json
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, jsonify
 
 app = Flask(__name__)
 
@@ -42,9 +42,18 @@ def Main():
         CheckInput(userInput)
 
 @app.route("/")
-def hello_world():
-    Main()
+def index():
     return render_template('index.html')
+
+@app.route("/get")
+def get():
+    return render_template("index.html", value="2 of 1")
+
+@app.route("/3")
+def userInput3():
+    titel = data3["forecast"]["weatherreport"]["title"]
+    weerbericht = data3["forecast"]["weatherreport"]["text"]
+    return render_template("index.html", titel=titel, weerbericht=weerbericht)
 
 @app.errorhandler(404)
 def redirect_to_root(e):
