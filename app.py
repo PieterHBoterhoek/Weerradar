@@ -49,9 +49,13 @@ def WeerberichtFormatter(weerbericht):
 def index():
     return render_template('index.html')
 
-@app.route("/get")
-def get():
-    return render_template("index.html", value="2 of 1")
+@app.route("/actueel")
+def ActueelWeer():
+    return render_template("actueelweer.html")
+
+@app.route("/weerstatistieken")
+def WeerStatistieken():
+    return render_template("weerstatistieken.html")
 
 @app.route("/Weerbericht")
 def Weerbericht():
@@ -73,7 +77,7 @@ def Weerbericht():
     titel = data["forecast"]["weatherreport"]["title"]
     weerbericht = data["forecast"]["weatherreport"]["text"]
     author = data["forecast"]["weatherreport"]["author"]
-    return render_template("index.html", date=ConvertDate(date=date), time=time, titel=titel, weerbericht=WeerberichtFormatter(weerbericht=weerbericht), author=author)
+    return render_template("weerbericht.html", date=ConvertDate(date=date), time=time, titel=titel, weerbericht=WeerberichtFormatter(weerbericht=weerbericht), author=author)
 
 @app.errorhandler(404)
 def redirect_to_root(e):

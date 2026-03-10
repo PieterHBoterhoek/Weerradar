@@ -1,11 +1,12 @@
 body {
-    text-align: left;
+    background-color: #000000;
+    color: white;
 }
 
 .navbar {
     display: flex;
     justify-content: center;
-    background-color: aqua;
+    background-color: rgb(6, 183, 59);
     top: 0px;
     left: 0px;
     position: fixed;
@@ -13,19 +14,23 @@ body {
 }
 
 .navbar a {
+    color: white;
     font-size: 1rem;
     padding: 1rem;
     margin: 1rem;
     text-decoration: none;
-    color: #000000;
     transition: background-color, border-radius .5s ease;
     border-radius: 5px;
 }
 
 .navbar a:hover {
-    background-color: rgb(6, 201, 201);
+    background-color: rgb(51, 203, 84);
     border-radius: 15px;
     padding: 1rem;
+}
+
+.centertext {
+    max-width: 700px;
 }
 
 .content {
@@ -40,6 +45,7 @@ body {
 }
 
 .output {
+    color: #000000;
     margin: 4rem;
     padding: 2rem;
     max-width: fit-content;
@@ -50,4 +56,9 @@ body {
     white-space: pre-line;
     line-height: 1.6;
     max-width: 700px;
+}
+
+#active {
+    background-color: rgb(51, 203, 84);
+    border-radius: 15px;
 }

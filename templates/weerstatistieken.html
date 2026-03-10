@@ -10,17 +10,24 @@
 <body>
     <nav>
         <div class="navbar">
-            <a id="active" href="/">Home</a>
-            <a href="/weerstatistieken">Weerstatistieken</a>
+            <a href="/">Home</a>
+            <a id="active" href="/weerstatistieken">Weerstatistieken</a>
             <a href="/actueel">Actuele weer</a>
             <a href="/Weerbericht">Weerbericht</a>
         </div>
     </nav>
     <div class="content">
-        <div class="centertext">
-            <h1>Welkom bij de WeerApp</h1>
-            <p>Kies bovenaan wat u wilt doen.</p>
-        </div>
+        {% if date is defined %}
+            <div class="output">
+                <div class="bron">
+                    <p>{{ date }} om {{ time }} door {{ author }}</p> 
+                </div>
+                <h1>{{ titel }}</h1>
+                <div class="weerbericht">
+                    {{ weerbericht | safe}}
+                </div>
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>
