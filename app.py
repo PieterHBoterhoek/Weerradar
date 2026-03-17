@@ -1,6 +1,6 @@
 from urllib.request import urlopen
 import json
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 from datetime import datetime
 import html
 
@@ -12,6 +12,42 @@ response = urlopen(url)
 months = ['Waarom moet het nou bij nul beginnen', 'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', "Juli", 'Augustus', "September", 'Oktober', 'November', "December"]
 
 data = json.loads(response.read())
+Stations = []
+
+def GetStations():
+    for station in data["actual"]["stationmeasurements"]:
+        s=station["regio"]
+        Stations.append(s)
+    print(Stations)
+    return Stations
+
+@app.route("/actueel", methods=['POST', 'GET'])
+def ActueelWeer():
+    if not Stations:
+        GetStations()
+    if request.method == 'POST':
+        userSelectedStation = request.form.get("selected_station")
+        selectedStation = next(
+            (s for s in data["actual"]["stationmeasurements"] if s["regio"] == userSelectedStation),
+            None
+        )
+        if selectedStation:
+            print(selectedStation["stationid"])
+            try:
+                weerType = selectedStation["weatherdescription"]                
+            except KeyError:
+                weerType = "niet gemeten"
+            try:
+                temperatuur = selectedStation["temperature"]
+            except KeyError:
+                temperatuur = "niet gemeten"
+            try:
+                bodemTemperatuur = selectedStation["groundtemperature"]
+            except KeyError:
+                bodemTemperatuur = "niet gemeten"
+
+        return render_template("actueelweer.html", stations=Stations, selectedStation=selectedStation["regio"], weertype=weerType, temperatuur=temperatuur, bodemtemperatuur=bodemTemperatuur)
+    return render_template("actueelweer.html", stations=Stations)
 
 def ConvertDate(date):
     sec1 = ''
@@ -48,10 +84,6 @@ def WeerberichtFormatter(weerbericht):
 @app.route("/")
 def index():
     return render_template('index.html')
-
-@app.route("/actueel")
-def ActueelWeer():
-    return render_template("actueelweer.html")
 
 @app.route("/weerstatistieken")
 def WeerStatistieken():

@@ -17,17 +17,24 @@
         </div>
     </nav>
     <div class="content">
-        {% if date is defined %}
-            <div class="output">
-                <div class="bron">
-                    <p>{{ date }} om {{ time }} door {{ author }}</p> 
-                </div>
-                <h1>{{ titel }}</h1>
-                <div class="weerbericht">
-                    {{ weerbericht | safe}}
-                </div>
-            </div>
-        {% endif %}
+        <div class="output">
+            {% if stations is defined %}
+                <form method="POST">
+                    <select name="selected_station">
+                        {% for station in stations %}
+                            <option value="{{ station }}">{{ station }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Submit</button>
+                </form>
+            {% endif %}
+            {% if selectedStation is defined %}
+                <h1>Het weer in {{ selectedStation }}</h1>
+                <p>Weertype: {{ weertype}}</p>
+                <p>Temperatuur: {{ temperatuur }}</p>
+                <p>Bodem temperatuur: {{ bodemtemperatuur }}</p>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
