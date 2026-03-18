@@ -45,8 +45,30 @@ def ActueelWeer():
                 bodemTemperatuur = selectedStation["groundtemperature"]
             except KeyError:
                 bodemTemperatuur = "niet gemeten"
+            try:
+                windKracht = selectedStation["windspeedBft"]
+            except KeyError:
+                windKracht = "niet gemeten"
+            try:
+                windRichting = selectedStation["winddirection"]
+            except KeyError:
+                windRichting = "niet gemeten"
+            try:
+                luchtVochtigheid = selectedStation["humidity"]
+            except KeyError:
+                luchtVochtigheid = "niet gemeten"
+            try:
+                luchtDruk = selectedStation["airpressure"]
+            except KeyError:
+                luchtDruk = "niet gemeten"
+            try:
+                neerslag = selectedStation["rainFallLast24Hour"]
+            except KeyError:
+                neerslag = "niet gemeten"
 
-        return render_template("actueelweer.html", stations=Stations, selectedStation=selectedStation["regio"], weertype=weerType, temperatuur=temperatuur, bodemtemperatuur=bodemTemperatuur)
+        return render_template("actueelweer.html", stations=Stations, selectedStation=selectedStation["regio"], 
+                            weertype=weerType, temperatuur=temperatuur, bodemtemperatuur=bodemTemperatuur, windkracht=windKracht,
+                            windrichting=windRichting, luchtvochtigheid=luchtVochtigheid, luchtdruk=luchtDruk, neerslag=neerslag)
     return render_template("actueelweer.html", stations=Stations)
 
 def ConvertDate(date):
