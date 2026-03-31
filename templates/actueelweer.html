@@ -22,22 +22,62 @@
                 <form method="POST">
                     <select name="selected_station">
                         {% for station in stations %}
-                            <option value="{{ station }}">{{ station }}</option>
+                            <option value="{{ station }}" {% if station == default %} selected {% endif %}>{{ station }}</option>
                         {% endfor %}
                     </select>
                     <button type="submit">Submit</button>
                 </form>
             {% endif %}
             {% if selectedStation is defined %}
-                <h1>Het weer in {{ selectedStation }}</h1>
-                <p>Weertype: {{ weertype}}</p>
-                <p>Temperatuur: {{ temperatuur }}</p>
-                <p>Bodem temperatuur: {{ bodemtemperatuur }}</p>
-                <p>Windkracht: {{ windkracht }}bft</p>
-                <p>WindRichting: {{ windrichting }}</p>
-                <p>Luchtvochtigheid: {{ luchtvochtigheid }}%</p>
-                <p>Luchtdruk: {{ luchtdruk }}hPa</p>
-                <p>Neerslag: {{ neerslag }}</p>
+                <h1>Het weer in {{ selectedStation }}</h1> 
+
+                {% if weertype is not none %}
+                    <p>Weertype: {{ weertype }}</p>
+                {% else %}
+                    <p>Weertype: niet gemeten</p>
+                {% endif %}  
+
+                {% if temperatuur is not none %}
+                    <p>Temperatuur: {{ temperatuur }}</p>
+                {% else %}
+                    <p>Temperatuur: niet gemeten</p>
+                {% endif %}  
+
+                {% if bodemtemperatuur is not none %}
+                    <p>Bodem temperatuur: {{ bodemtemperatuur }}</p>
+                {% else %}
+                    <p>Bodem temperatuur: niet gemeten</p>
+                {% endif %}  
+
+                {% if windkracht is not none %}
+                    <p>Windkracht: {{ windkracht }}bft</p>
+                {% else %}
+                    <p>Windkracht: niet gemeten</p>
+                {% endif %}                
+
+                {% if windRichting is not none %}
+                    <p>WindRichting: {{ windrichting }}</p>
+                {% else %}
+                    <p>WindRichting: niet gemeten</p>
+                {% endif %}
+
+                {% if luchtvochtigheid is not none %}
+                    <p>Luchtvochtigheid: {{ luchtvochtigheid }}%</p>
+                {% else %}
+                    <p>Luchtvochtigheid: niet gemeten</p>    
+                {% endif %}
+
+                {% if luchtdruk is not none %}
+                    <p>Luchtdruk: {{ luchtdruk }}hPa</p>
+                {% else %}
+                    <p>Luchtdruk: niet gemeten</p>
+                {% endif %}
+
+                {% if neerslag is not none %}
+                    <p>Neerslag: {{ neerslag }}</p>
+                {% else %}
+                    <p>Neerslag: niet gemeten</p>
+                {% endif %}
             {% endif %}
         </div>
     </div>

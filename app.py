@@ -56,17 +56,17 @@ def ActueelWeer():
             try:
                 luchtVochtigheid = selectedStation["humidity"]
             except KeyError:
-                luchtVochtigheid = "niet gemeten"
+                luchtVochtigheid = None
             try:
                 luchtDruk = selectedStation["airpressure"]
             except KeyError:
-                luchtDruk = "niet gemeten"
+                luchtDruk = None
             try:
                 neerslag = selectedStation["rainFallLast24Hour"]
             except KeyError:
                 neerslag = "niet gemeten"
 
-        return render_template("actueelweer.html", stations=Stations, selectedStation=selectedStation["regio"], 
+        return render_template("actueelweer.html", default=userSelectedStation, stations=Stations, selectedStation=selectedStation["regio"], 
                             weertype=weerType, temperatuur=temperatuur, bodemtemperatuur=bodemTemperatuur, windkracht=windKracht,
                             windrichting=windRichting, luchtvochtigheid=luchtVochtigheid, luchtdruk=luchtDruk, neerslag=neerslag)
     return render_template("actueelweer.html", stations=Stations)
@@ -94,14 +94,21 @@ def ConvertDate(date):
     date = f"Geplaats op {sec3} {sec2} {sec1}"
     return date
 
-def WeerberichtFormatter(weerbericht):
-    weerbericht = html.unescape(weerbericht)
-    weerbericht = " ".join(weerbericht.split())
+def WeerberichtFormatter(weerbericht, summary):
+    weerbericht = html.unescape(weerbericht).strip()
+    summary = html.unescape(summary).strip()
+
     sections = ["Vanmiddag", "Vanavond", "Vannacht", "Morgen", "Daarna"]
 
+    if weerbericht.startswith(summary):
+        bericht = weerbericht[len(summary):].strip()
+
+    samenvatting = f"<b>{summary}</b>"
+
     for i in sections:
-        weerbericht = weerbericht.replace(i, f"\n\n<b>{i}</b>")
-    return weerbericht
+        bericht = bericht.replace(i, f"\n\n<b>{i}</b>")
+
+    return samenvatting + "\n" + bericht
 
 @app.route("/")
 def index():
@@ -130,8 +137,9 @@ def Weerbericht():
     ''.join(time)
     titel = data["forecast"]["weatherreport"]["title"]
     weerbericht = data["forecast"]["weatherreport"]["text"]
+    samenvatting = data["forecast"]["weatherreport"]["summary"]
     author = data["forecast"]["weatherreport"]["author"]
-    return render_template("weerbericht.html", date=ConvertDate(date=date), time=time, titel=titel, weerbericht=WeerberichtFormatter(weerbericht=weerbericht), author=author)
+    return render_template("weerbericht.html", date=ConvertDate(date=date), time=time, titel=titel, weerbericht=WeerberichtFormatter(weerbericht=weerbericht, summary=samenvatting), author=author)
 
 @app.errorhandler(404)
 def redirect_to_root(e):
