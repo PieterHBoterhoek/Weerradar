@@ -20,12 +20,12 @@
         <div class="output">
             {% if stations is defined %}
                 <form method="POST">
-                    <select name="selected_station">
+                    <select name="selected_station" onchange="this.form.submit()">
+                        <option disabled selected value> -- selecteer een optie -- </option>
                         {% for station in stations %}
                             <option value="{{ station }}" {% if station == default %} selected {% endif %}>{{ station }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit">Submit</button>
                 </form>
             {% endif %}
             {% if selectedStation is defined %}
