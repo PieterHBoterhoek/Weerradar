@@ -102,13 +102,18 @@ def WeerberichtFormatter(weerbericht, summary):
 
     if weerbericht.startswith(summary):
         bericht = weerbericht[len(summary):].strip()
-
+    else:
+        bericht = weerbericht
+    
     samenvatting = f"<b>{summary}</b>"
 
     for i in sections:
         bericht = bericht.replace(i, f"\n\n<b>{i}</b>")
 
-    return samenvatting + "\n" + bericht
+    if weerbericht.startswith(summary):
+        return samenvatting + "\n" + bericht
+    else:
+        return bericht        
 
 @app.route("/")
 def index():
