@@ -6,7 +6,7 @@ body {
 .navbar {
     display: flex;
     justify-content: center;
-    background-color: rgb(6, 183, 59);
+    background-color: #01ad01;
     top: 0px;
     left: 0px;
     position: fixed;
@@ -17,16 +17,17 @@ body {
     color: white;
     font-size: 1rem;
     padding: 1rem;
-    margin: 1rem;
     text-decoration: none;
-    transition: background-color, border-radius .5s ease;
-    border-radius: 5px;
+    transition: background-color .5s ease;
 }
 
 .navbar a:hover {
-    background-color: rgb(51, 203, 84);
-    border-radius: 15px;
+    background-color: #009100;
     padding: 1rem;
+}
+
+#active {
+    background-color: #009100;
 }
 
 .centertext {
@@ -59,7 +60,15 @@ body {
     max-width: 700px;
 }
 
-#active {
-    background-color: rgb(51, 203, 84);
-    border-radius: 15px;
+li {
+    margin: .3rem;
+}
+
+.link {
+    color: white;
+    transition: all .5s ease;
+}
+
+.link:hover {
+    font-size: 1.1rem;
 }

@@ -18,6 +18,7 @@
     </nav>
     <div class="content">
         <div class="output">
+            <h1>Bekijk het actuele weer</h1>
             {% if stations is defined %}
                 <form method="POST">
                     <select name="selected_station" onchange="this.form.submit()">
@@ -29,7 +30,7 @@
                 </form>
             {% endif %}
             {% if selectedStation is defined %}
-                <h1>Het weer in {{ selectedStation }}</h1> 
+                <h2>Het weer in {{ selectedStation }}</h2> 
 
                 {% if weertype is not none %}
                     <p>Weertype: {{ weertype }}</p>
