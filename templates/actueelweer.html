@@ -19,68 +19,45 @@
     <div class="content">
         <div class="output">
             <h1>Bekijk het actuele weer</h1>
-            {% if stations is defined %}
-                <form method="POST">
-                    <select name="selected_station" onchange="this.form.submit()">
-                        <option disabled selected value> -- selecteer een optie -- </option>
-                        {% for station in stations %}
-                            <option value="{{ station }}" {% if station == default %} selected {% endif %}>{{ station }}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-            {% endif %}
-            {% if selectedStation is defined %}
-                <h2>Het weer in {{ selectedStation }}</h2> 
+            {% for station in stations %}
+            <div>
+                <button type="button" class="collapsible">{{ station.name }}</button>
+                <div class="items">
+                    <p>Weertype: {{ station.weertype }}</p>
+                    <p>Temperatuur: {{ station.temperatuur }}</p>
+                    <p>Bodem temperatuur: {{ station.bodemtemperatuur }}</p>
+                    <p>Windkracht: {{ station.windkracht }} bft</p>
+                    <p>Windrichting: {{ station.windrichting }}</p>
+                    <p>Luchtvochtigheid: {{ station.luchtvochtigheid or "niet gemeten" }}%</p>
+                    <p>Luchtdruk: {{ station.luchtdruk or "niet gemeten" }} hPa</p>
+                    <p>Neerslag: {{ station.neerslag }}</p>
+                </div>
+            </div>
 
-                {% if weertype is not none %}
-                    <p>Weertype: {{ weertype }}</p>
-                {% else %}
-                    <p>Weertype: niet gemeten</p>
-                {% endif %}  
-
-                {% if temperatuur is not none %}
-                    <p>Temperatuur: {{ temperatuur }}</p>
-                {% else %}
-                    <p>Temperatuur: niet gemeten</p>
-                {% endif %}  
-
-                {% if bodemtemperatuur is not none %}
-                    <p>Bodem temperatuur: {{ bodemtemperatuur }}</p>
-                {% else %}
-                    <p>Bodem temperatuur: niet gemeten</p>
-                {% endif %}  
-
-                {% if windkracht is not none %}
-                    <p>Windkracht: {{ windkracht }}bft</p>
-                {% else %}
-                    <p>Windkracht: niet gemeten</p>
-                {% endif %}                
-
-                {% if windRichting is not none %}
-                    <p>WindRichting: {{ windrichting }}</p>
-                {% else %}
-                    <p>WindRichting: niet gemeten</p>
-                {% endif %}
-
-                {% if luchtvochtigheid is not none %}
-                    <p>Luchtvochtigheid: {{ luchtvochtigheid }}%</p>
-                {% else %}
-                    <p>Luchtvochtigheid: niet gemeten</p>    
-                {% endif %}
-
-                {% if luchtdruk is not none %}
-                    <p>Luchtdruk: {{ luchtdruk }}hPa</p>
-                {% else %}
-                    <p>Luchtdruk: niet gemeten</p>
-                {% endif %}
-
-                {% if neerslag is not none %}
-                    <p>Neerslag: {{ neerslag }}</p>
-                {% else %}
-                    <p>Neerslag: niet gemeten</p>
-                {% endif %}
-            {% endif %}
+            {% endfor %}
         </div>
     </div>
+    </div>
 </body>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+        this.classList.toggle("collapsible-active");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+        content.style.maxHeight = null;
+            setTimeout(function(){
+                content.style.display = "none";
+            }, 200);
+        
+        } else {
+            content.style.display = "block";
+            content.style.maxHeight = content.scrollHeight + "px";
+        } 
+    });
+    }
+</script>
 </html>

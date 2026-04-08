@@ -1,7 +1,6 @@
 from urllib.request import urlopen
 import json
 from flask import Flask, render_template, redirect, request
-from datetime import datetime
 import html
 
 app = Flask(__name__)
@@ -21,55 +20,27 @@ def GetStations():
     print(Stations)
     return Stations
 
-@app.route("/actueel", methods=['POST', 'GET'])
+@app.route("/actueel", methods=['GET'])
 def ActueelWeer():
     if not Stations:
         GetStations()
-    if request.method == 'POST':
-        userSelectedStation = request.form.get("selected_station")
-        selectedStation = next(
-            (s for s in data["actual"]["stationmeasurements"] if s["regio"] == userSelectedStation),
-            None
-        )
-        if selectedStation:
-            print(selectedStation["stationid"])
-            try:
-                weerType = selectedStation["weatherdescription"]                
-            except KeyError:
-                weerType = "niet gemeten"
-            try:
-                temperatuur = selectedStation["temperature"]
-            except KeyError:
-                temperatuur = "niet gemeten"
-            try:
-                bodemTemperatuur = selectedStation["groundtemperature"]
-            except KeyError:
-                bodemTemperatuur = "niet gemeten"
-            try:
-                windKracht = selectedStation["windspeedBft"]
-            except KeyError:
-                windKracht = "niet gemeten"
-            try:
-                windRichting = selectedStation["winddirection"]
-            except KeyError:
-                windRichting = "niet gemeten"
-            try:
-                luchtVochtigheid = selectedStation["humidity"]
-            except KeyError:
-                luchtVochtigheid = None
-            try:
-                luchtDruk = selectedStation["airpressure"]
-            except KeyError:
-                luchtDruk = None
-            try:
-                neerslag = selectedStation["rainFallLast24Hour"]
-            except KeyError:
-                neerslag = "niet gemeten"
 
-        return render_template("actueelweer.html", default=userSelectedStation, stations=Stations, selectedStation=selectedStation["regio"], 
-                            weertype=weerType, temperatuur=temperatuur, bodemtemperatuur=bodemTemperatuur, windkracht=windKracht,
-                            windrichting=windRichting, luchtvochtigheid=luchtVochtigheid, luchtdruk=luchtDruk, neerslag=neerslag)
-    return render_template("actueelweer.html", stations=Stations)
+    station_data = []
+
+    for s in data["actual"]["stationmeasurements"]:
+        station_data.append({
+            "name": s.get("regio"),
+            "weertype": s.get("weatherdescription", "niet gemeten"),
+            "temperatuur": s.get("temperature", "niet gemeten"),
+            "bodemtemperatuur": s.get("groundtemperature", "niet gemeten"),
+            "windkracht": s.get("windspeedBft", "niet gemeten"),
+            "windrichting": s.get("winddirection", "niet gemeten"),
+            "luchtvochtigheid": s.get("humidity"),
+            "luchtdruk": s.get("airpressure"),
+            "neerslag": s.get("rainFallLast24Hour", "niet gemeten"),
+        })
+
+    return render_template("actueelweer.html", stations=station_data)
 
 def ConvertDate(date):
     sec1 = ''
@@ -113,7 +84,7 @@ def WeerberichtFormatter(weerbericht, summary):
     if weerbericht.startswith(summary):
         return samenvatting + "\n" + bericht
     else:
-        return bericht        
+        return bericht
 
 @app.route("/")
 def index():
