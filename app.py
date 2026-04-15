@@ -97,7 +97,7 @@ def WeerStatistieken():
         if not start or not eind:
             return jsonify({"error": "Geef start en einddatum mee (YYYYMMDD)"}), 400
         
-        if start >= eersteDatum or eind <= laatsteDatum:
+        if start > eersteDatum or eind < laatsteDatum:
             return jsonify({"error": "Geef een start en eind datum mee die niet kleiner is dan de eerste datum en groter dan de laatste datum"}), 400
 
         startDatum = datetime.strptime(start, "%Y%m%d")
