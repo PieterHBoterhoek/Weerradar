@@ -16,7 +16,6 @@ outputDir = "resultaten"
 os.makedirs(outputDir, exist_ok=True)
 
 response = urlopen(url)
-months = ['Waarom moet het nou bij nul beginnen', 'Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', "Juli", 'Augustus', "September", 'Oktober', 'November', "December"]
 
 data = json.loads(response.read())
 Stations = []
@@ -43,58 +42,6 @@ def parse_line(line):
 
     except (ValueError, IndexError):
         return None
-
-def GetStations():
-    for station in data["actual"]["stationmeasurements"]:
-        s=station["regio"]
-        Stations.append(s)
-    print(Stations)
-    return Stations
-
-@app.route("/actueel", methods=['GET'])
-def ActueelWeer():
-    if not Stations:
-        GetStations()
-
-    station_data = []
-
-    for s in data["actual"]["stationmeasurements"]:
-        station_data.append({
-            "name": s.get("regio"),
-            "weertype": s.get("weatherdescription", "niet gemeten"),
-            "temperatuur": s.get("temperature", "niet gemeten"),
-            "bodemtemperatuur": s.get("groundtemperature", "niet gemeten"),
-            "windkracht": s.get("windspeedBft", "niet gemeten"),
-            "windrichting": s.get("winddirection", "niet gemeten"),
-            "luchtvochtigheid": s.get("humidity"),
-            "luchtdruk": s.get("airpressure"),
-            "neerslag": s.get("rainFallLast24Hour", "niet gemeten"),
-        })
-
-    return render_template("actueelweer.html", stations=station_data)
-
-def ConvertDate(date):
-    sec1 = ''
-    sec2 = ''
-    sec3 = ''
-    currentSec = 1
-    for i in date:
-        if i == "-":
-            currentSec += 1
-            continue
-        else:
-            if currentSec == 1:
-                sec1 += i
-            elif currentSec == 2:
-                sec2 += i
-            else:
-                sec3 += i
-    ''.join(sec1)
-    ''.join(sec2)
-    sec2 = months[int(sec2)]
-    ''.join(sec3)
-    date = f"Geplaats op {sec3} {sec2} {sec1}"
-    return date
 
 def WeerberichtFormatter(weerbericht, summary):
     weerbericht = html.unescape(weerbericht).strip()
@@ -149,9 +96,12 @@ def WeerStatistieken():
 
         if not start or not eind:
             return jsonify({"error": "Geef start en einddatum mee (YYYYMMDD)"}), 400
+        
+        if start >= eersteDatum or eind <= laatsteDatum:
+            return jsonify({"error": "Geef een start en eind datum mee die niet kleiner is dan de eerste datum en groter dan de laatste datum"}), 400
 
-        start_date = datetime.strptime(start, "%Y%m%d")
-        end_date = datetime.strptime(eind, "%Y%m%d")
+        startDatum = datetime.strptime(start, "%Y%m%d")
+        eindDatum = datetime.strptime(eind, "%Y%m%d")
 
         data = []
 
@@ -161,7 +111,7 @@ def WeerStatistieken():
                     continue
 
                 parsed = parse_line(line)
-                if parsed and start_date <= parsed["date"] <= end_date:
+                if parsed and startDatum <= parsed["date"] <= eindDatum:
                     data.append(parsed)
 
         if not data:
@@ -199,35 +149,63 @@ def WeerStatistieken():
             f.write(f"Gemiddelde temperatuur: {round(avgTemp, 2)} \n")
             f.write(f"Totale neerslag: {totalRain} mm\n")
 
-    return render_template("weerstatistieken.html", resultaat=resultaat, filename=filename, eerstedatum=eersteDatum, laatstedatum=laatsteDatum)
+    return render_template(
+        "weerstatistieken.html", 
+        resultaat=resultaat, 
+        filename=filename, 
+        eerstedatum=eersteDatum, 
+        laatstedatum=laatsteDatum
+    )
 
 # download de nieuwste file die is aangemaakt
 @app.route('/download/<filename>')
 def download_file(filename):
     return send_from_directory('resultaten', filename, as_attachment=True)
 
+@app.route("/actueel", methods=['GET'])
+def ActueelWeer():
+    stationData = []
+
+    for s in data["actual"]["stationmeasurements"]:
+        stationData.append({
+            "name": s.get("regio"),
+            "weertype": s.get("weatherdescription", "niet gemeten"),
+            "temperatuur": s.get("temperature", "niet gemeten"),
+            "bodemtemperatuur": s.get("groundtemperature", "niet gemeten"),
+            "windkracht": s.get("windspeedBft", "niet gemeten"),
+            "windrichting": s.get("winddirection", "niet gemeten"),
+            "luchtvochtigheid": s.get("humidity"),
+            "luchtdruk": s.get("airpressure"),
+            "neerslag": s.get("rainFallLast24Hour", "niet gemeten"),
+        })
+
+    return render_template(
+        "actueelweer.html", 
+        stations=stationData
+    )
+
 @app.route("/Weerbericht")
 def Weerbericht():
     datumFull = data["forecast"]["weatherreport"]["published"]
-    date = ''
-    time = ''
-    section = 1
-    for i in datumFull:
-        if section == 1:
-            if i == "T":
-                ''.join(date)
-                section = 2
-                continue
-            else:
-                date += i
-        else:
-            time += i
-    ''.join(time)
+
+    datum = datetime.strptime(datumFull, "%Y-%m-%dT%H:%M:%S")
+
     titel = data["forecast"]["weatherreport"]["title"]
     weerbericht = data["forecast"]["weatherreport"]["text"]
     samenvatting = data["forecast"]["weatherreport"]["summary"]
     author = data["forecast"]["weatherreport"]["author"]
-    return render_template("weerbericht.html", date=ConvertDate(date=date), time=time, titel=titel, weerbericht=WeerberichtFormatter(weerbericht=weerbericht, summary=samenvatting), author=author)
+
+    return render_template(
+        "weerbericht.html",
+        date = datum.strftime("Geplaatst op %d %B %Y"),
+        time = datum.strftime("%H:%M"),
+        titel=titel,
+        weerbericht=WeerberichtFormatter(
+            weerbericht=weerbericht,
+            summary=samenvatting
+        ),
+        author=author
+    )
 
 @app.errorhandler(404)
 def redirect_to_root(e):
