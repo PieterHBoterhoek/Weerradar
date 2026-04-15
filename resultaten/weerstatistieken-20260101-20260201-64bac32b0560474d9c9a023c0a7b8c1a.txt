@@ -1,0 +1,6 @@
+Weerstatistieken
+Periode: 20260101 - 20260201
+Hoogste temperatuur: 11.8 
+Laagste temperatuur: -9.6 
+Gemiddelde temperatuur: 2.61 
+Totale neerslag: 96.1 mm

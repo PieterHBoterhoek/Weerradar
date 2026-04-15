@@ -17,16 +17,30 @@
         </div>
     </nav>
     <div class="content">
-        {% if date is defined %}
-            <div class="output">
-                <div class="bron">
-                    <p>{{ date }} om {{ time }} door {{ author }}</p> 
-                </div>
-                <h1>{{ titel }}</h1>
-                <div class="weerbericht">
-                    {{ weerbericht | safe}}
-                </div>
-            </div>
+        <div class="output">
+            <h3>Geef een start- en einddatum op</h3>
+            <p>Eerste datum gegevens: {{ eerstedatum }}</p>
+            <p>Laatste datum gegevens: {{ laatstedatum }}</p>
+            <form method="POST" action="{{ url_for('WeerStatistieken') }}">
+                <input type="text" name="start" placeholder="Startdatum(YYYYMMDD)">
+                <input type="text" name="end" placeholder="Einddatum (YYYYMMDD)">
+                <button type="submit">Submit</button>                
+            </form>
+        </div>
+        {% if resultaat %}
+        <div class="output">
+            <h3>Weerstatistieken</h3>
+            <p>Periode: {{ resultaat.periode }}</p>
+            <p>Hoogste temperatuur: {{ resultaat.hoogste_temperatuur }}°C</p>
+            <p>Laagste temperatuur: {{ resultaat.laagste_temperatuur }}°C</p>
+            <p>Gemiddelde temperatuur: {{ resultaat.gemiddelde_temperatuur }}°C</p>
+            <p>Totale neerslag: {{ resultaat.totale_neerslag }}</p>
+            {% if filename %}
+                <a href="{{ url_for('download_file', filename=filename) }}">
+                    <button>Download</button>
+                </a>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
 </body>

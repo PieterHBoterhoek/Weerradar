@@ -36,7 +36,6 @@ body {
 
 .content {
     display: flex;
-    align-items: center;
     justify-content: center;
     margin-top: 10%;
 }
@@ -46,6 +45,7 @@ body {
 }
 
 .output {
+    max-width: min-content;
     color: #000000;
     margin: 4rem;
     padding: 2rem;
