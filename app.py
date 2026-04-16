@@ -86,9 +86,9 @@ def WeerStatistieken():
                 continue
 
             if eersteDatum is None:
-                eersteDatum = parsed["date"].strftime("%Y-%m-%d")
+                eersteDatum = parsed["date"]
 
-            laatsteDatum = parsed["date"].strftime("%Y-%m-%d")
+            laatsteDatum = parsed["date"]
 
     if request.method == 'POST':
         start = request.form['start']
@@ -96,12 +96,15 @@ def WeerStatistieken():
 
         if not start or not eind:
             return jsonify({"error": "Geef start en einddatum mee (YYYYMMDD)"}), 400
-        
-        if start > eersteDatum or eind < laatsteDatum:
-            return jsonify({"error": "Geef een start en eind datum mee die niet kleiner is dan de eerste datum en groter dan de laatste datum"}), 400
 
-        startDatum = datetime.strptime(start, "%Y%m%d")
-        eindDatum = datetime.strptime(eind, "%Y%m%d")
+        try:
+            startDatum = datetime.strptime(start, "%Y%m%d")
+            eindDatum = datetime.strptime(eind, "%Y%m%d")
+        except:
+            return jsonify({"error": "Datum bestaat niet"})
+
+        if startDatum < eersteDatum or eindDatum > laatsteDatum:
+            return jsonify({"error": "Geef een start en eind datum mee die niet kleiner is dan de eerste datum en groter dan de laatste datum"}), 400
 
         data = []
 
@@ -153,8 +156,8 @@ def WeerStatistieken():
         "weerstatistieken.html", 
         resultaat=resultaat, 
         filename=filename, 
-        eerstedatum=eersteDatum, 
-        laatstedatum=laatsteDatum
+        eerstedatum=eersteDatum.strftime("%Y-%m-%d") if eersteDatum else None, 
+        laatstedatum=laatsteDatum.strftime("%Y-%m-%d") if laatsteDatum else None
     )
 
 # download de nieuwste file die is aangemaakt
